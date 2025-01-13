@@ -1,6 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*{
+  font-family: "Outfit", serif;
+}
 
 a{
   color: #5a5a5a;
@@ -8,4 +14,10 @@ a{
 
 img{
   cursor: pointer;
+}
+
+@layer utilities{
+  .no-scrollbar::-webkit-scrollbar{
+    display: none;
+  }
 }
