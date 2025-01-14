@@ -7,7 +7,7 @@ const Home = ({ sidebar }) => {
   return (
     <>
       <Sidebar sidebar={sidebar} category={category} setCategory={setCategory}/>
-      <div className={`bg-[#f9f9f9] py-8 pl-[16%] pr-[1%] ${sidebar? '':'pl-[6%]'}`}>
+      <div className={`py-8 pl-[16%] pr-[1%] ${sidebar? '':'pl-[6%]'}`}>
         <Feed sidebar={sidebar} category={category}/>
       </div>
     </>

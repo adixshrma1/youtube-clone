@@ -1,92 +1,153 @@
-import React from 'react'
-import { assets } from '../assets/assets'
-import video1 from '../assets/video.mp4'
+import React, { useEffect, useState } from "react";
+import { assets } from "../assets/assets";
+import moment from "moment";
+import { useParams } from "react-router-dom";
 
 const PlayVideo = () => {
+  const { videoId } = useParams();
+  const [apiData, setAPIData] = useState(null);
+  const [channelData, setChannelData] = useState(null);
+  const [commentData, setCommentData] = useState([]);
+  const fetchData = async () => {
+    const url = `https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&maxResults=1&key=${
+      import.meta.env.VITE_YOUTUBE_DATA_API_KEY
+    }`;
+    await fetch(url)
+      .then((res) => res.json())
+      .then((data) => setAPIData(data.items[0]));
+  };
+  const fetchCommentData = async () => {
+    const url = `https://youtube.googleapis.com/youtube/v3/commentThreads?part=snippet%2Creplies&maxResults=42&videoId=${videoId}&key=${
+      import.meta.env.VITE_YOUTUBE_DATA_API_KEY
+    }`;
+    await fetch(url)
+      .then((res) => res.json())
+      .then((data) => setCommentData(data.items));
+  };
+  const fetchChannelData = async () => {
+    const url = `https://youtube.googleapis.com/youtube/v3/channels?part=snippet%2CcontentDetails%2Cstatistics&id=${
+      apiData?.snippet?.channelId
+    }&key=${import.meta.env.VITE_YOUTUBE_DATA_API_KEY}`;
+    await fetch(url)
+      .then((res) => res.json())
+      .then((data) => setChannelData(data.items[0]));
+  };
+  useEffect(() => {
+    fetchData();
+    fetchCommentData();
+  }, [videoId]);
+  useEffect(() => {
+    fetchChannelData();
+  }, [apiData]);
+
+  const converter = (view) => {
+    if (view >= 1000000) {
+      return Math.round(view / 1000000) + "M";
+    } else if (view >= 1000) {
+      return Math.round(view / 1000) + "K";
+    } else {
+      return view;
+    }
+  };
   return (
-    <div className='basis-[69%] px-2'>
-        <video className='w-full rounded-2xl' src={video1} controls autoPlay muted></video>
-        <h3 className='text-2xl font-semibold my-3'>Best Youtube Channel to Learn Web Development</h3>
-        <div className='flex items-center justify-between'>
-            <div className='flex items-center gap-3'>
-                <img className='w-12 rounded-full' src={assets.jackIcon} />
-                <div>
-                    <p className='text-lg font-semibold'>GreatStack</p>
-                    <p className='text-sm text-[#5a5a5a]'>1M subscribers</p>
-                </div>
-                <button className='bg-black text-white font-semibold py-2 px-3.5 rounded-full ml-7'>Subscribe</button>
-            </div>
-            <div className='flex items-center gap-3'>
-                <div className='flex items-center gap-2 bg-[#f2f2f2] py-2 px-4 rounded-full'>
-                    <img className='w-6' src={assets.likeIcon} />
-                    <p>17K</p>
-                    <div className='w-[1px] h-5 bg-gray-700'></div>
-                    <img className='w-6' src={assets.dislikeIcon} />
-                </div>
-                <button className='flex items-center bg-[#f2f2f2] py-2 px-4 rounded-full'><img className='w-6' src={assets.shareIcon} /> Share</button>
-                <button className='flex items-center bg-[#f2f2f2] py-2 px-4 rounded-full'><img className='w-6' src={assets.saveIcon} /> Save</button>
-            </div>
+    <div className="basis-[69%] px-2">
+      <div className="h-[500px]">
+        <iframe
+          className="w-full h-full rounded-lg"
+          src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+        ></iframe>
+      </div>
+      <h3 className="text-2xl font-semibold my-3">
+        {apiData ? apiData.snippet.title : "Video Title"}
+      </h3>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <img
+            className="w-12 rounded-full"
+            src={channelData ? channelData.snippet.thumbnails.default.url : ""}
+          />
+          <div>
+            <p className="text-lg font-semibold">
+              {apiData ? apiData.snippet.channelTitle : "Channel Title"}
+            </p>
+            <p className="text-sm text-[#5a5a5a]">
+              {channelData
+                ? converter(channelData.statistics.subscriberCount)
+                : "000"}{" "}
+              subscribers
+            </p>
+          </div>
+          <button className="bg-black text-white font-semibold py-2 px-3.5 rounded-full ml-7">
+            Subscribe
+          </button>
         </div>
-        <div className='my-3 bg-[#f2f2f2] p-2 rounded-xl'>
-            <h1 className='font-semibold'>123891 views 2 hours ago</h1><br />
-            <p className='text-[#2d2d2d]'>Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nihil soluta consequuntur porro culpa, qui esse repudiandae atque quis maiores laudantium!</p>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 bg-[#f2f2f2] py-2 px-4 rounded-full">
+            <img className="w-6" src={assets.likeIcon} />
+            <p>{apiData ? converter(apiData.statistics.likeCount) : "0"}</p>
+            <div className="w-[1px] h-5 bg-gray-700"></div>
+            <img className="w-6" src={assets.dislikeIcon} />
+          </div>
+          <button className="flex items-center bg-[#f2f2f2] py-2 px-4 rounded-full">
+            <img className="w-6" src={assets.shareIcon} /> Share
+          </button>
+          <button className="flex items-center bg-[#f2f2f2] py-2 px-4 rounded-full">
+            <img className="w-6" src={assets.saveIcon} /> Save
+          </button>
         </div>
+      </div>
+      <div className="my-3 bg-[#f2f2f2] p-2 rounded-xl">
+        <h1 className="font-semibold">
+          {apiData
+            ? Number(apiData.statistics.viewCount).toLocaleString("en-US")
+            : "0"}{" "}
+          views {apiData ? moment(apiData.snippet.publishedAt).fromNow() : ""}
+        </h1>
+        <br />
+        <p className="text-[#2d2d2d]">
+          {apiData ? apiData.snippet.description.slice(0, 100) : "Description"}{" "}
+          <span className="font-semibold cursor-pointer">...more</span>
+        </p>
+      </div>
 
-        {/* video comments */}
-        <div>
-            <h4 className='text-2xl font-semibold'>1,140 comments</h4>
-            <div className='mt-5 flex items-center gap-3'>
-                <img className='w-12 rounded-full' src={assets.user_profile} />
-                <div className=''>
-                    <h3 className='font-semibold'>Jack Nichole <span className='text-gray-700 text-xs font-light'>1 day ago</span></h3>
-                    <p className='text-gray-700'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente quis dolorum dolor dolores, maxime suscipit!</p>
-                    <div className='flex items-center gap-2 mt-2'>
-                        <img className='w-6' src={assets.likeIcon} />
-                        <p className='text-sm'>23</p>
-                        <img className='w-6' src={assets.dislikeIcon} />
-                    </div>
+      {/* video comments */}
+      <div>
+        <h4 className="text-2xl font-semibold">
+          {apiData
+            ? Number(apiData.statistics.commentCount).toLocaleString("en-US")
+            : ""}{" "}
+          comments
+        </h4>
+        {commentData
+          ? commentData.map((item, index) => (
+              <div key={index} className="my-5 flex items-center gap-3">
+                <img className="w-12 rounded-full" src={item.snippet.topLevelComment.snippet.authorProfileImageUrl} />
+                <div className="">
+                  <h3 className="font-semibold">
+                    {item.snippet.topLevelComment.snippet.authorDisplayName}{" "}
+                    <span className="text-gray-700 text-xs font-light">
+                      {moment(item.snippet.topLevelComment.snippet.publishedAt).fromNow()}
+                    </span>
+                  </h3>
+                  <p className="text-gray-700">
+                   {item.snippet.topLevelComment.snippet.textDisplay.slice(0,400)}
+                  </p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <img className="w-6" src={assets.likeIcon} />
+                    <p className="text-sm">{converter(item.snippet.topLevelComment.snippet.likeCount)}</p>
+                    <img className="w-6" src={assets.dislikeIcon} />
+                  </div>
                 </div>
-            </div>
-            <div className='mt-5 flex items-center gap-3'>
-                <img className='w-12 rounded-full' src={assets.user_profile} />
-                <div className=''>
-                    <h3 className='font-semibold'>Jack Nichole <span className='text-gray-500 text-sm'>1 day ago</span></h3>
-                    <p className='text-gray-700'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente quis dolorum dolor dolores, maxime suscipit!</p>
-                    <div className='flex items-center gap-2 mt-2'>
-                        <img className='w-6' src={assets.likeIcon} />
-                        <p className='text-sm'>23</p>
-                        <img className='w-6' src={assets.dislikeIcon} />
-                    </div>
-                </div>
-            </div>
-            <div className='mt-5 flex items-center gap-3'>
-                <img className='w-12 rounded-full' src={assets.user_profile} />
-                <div className=''>
-                    <h3 className='font-semibold'>Jack Nichole <span className='text-gray-500 text-sm'>1 day ago</span></h3>
-                    <p className='text-gray-700'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente quis dolorum dolor dolores, maxime suscipit!</p>
-                    <div className='flex items-center gap-2 mt-2'>
-                        <img className='w-6' src={assets.likeIcon} />
-                        <p className='text-sm'>23</p>
-                        <img className='w-6' src={assets.dislikeIcon} />
-                    </div>
-                </div>
-            </div>
-            <div className='mt-5 flex items-center gap-3'>
-                <img className='w-12 rounded-full' src={assets.user_profile} />
-                <div className=''>
-                    <h3 className='font-semibold'>Jack Nichole <span className='text-gray-500 text-sm'>1 day ago</span></h3>
-                    <p className='text-gray-700'>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Sapiente quis dolorum dolor dolores, maxime suscipit!</p>
-                    <div className='flex items-center gap-2 mt-2'>
-                        <img className='w-6' src={assets.likeIcon} />
-                        <p className='text-sm'>23</p>
-                        <img className='w-6' src={assets.dislikeIcon} />
-                    </div>
-                </div>
-            </div>
-            
-        </div>
+              </div>
+            ))
+          : "ghanta"}
+
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default PlayVideo
+export default PlayVideo;

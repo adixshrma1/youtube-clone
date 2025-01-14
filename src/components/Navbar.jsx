@@ -1,12 +1,13 @@
 import React from "react";
 import { assets } from "../assets/assets";
+import { Link } from "react-router-dom";
 
 const Navbar = ({setSidebar}) => {
   return (
     <nav className="py-2.5 px-[2%] flex justify-between sticky top-0 z-10  bg-white">
       <div className="flex gap-3 items-center">
         <img className="w-6" onClick={()=> setSidebar(prev => !prev)} src={assets.menuIcon} />
-        <img className="w-32" src={assets.logo} />
+        <Link to='/'><img className="w-32" src={assets.logo} /></Link>
       </div>
       <div className="flex items-center">
         <div className="flex items-center border border-[#ccc] py-2 px-3 rounded-full">
