@@ -30,17 +30,17 @@ const Recommended = ({ categoryId }) => {
     fetchData();
   }, []);
   return (
-    <div className="basis-[31%] px-2">
+    <div className="hidden lg:block lg:basis-[31%] px-2">
       {apiData
         ? apiData.map((item, index) => (
-            <Link to={`/video/${item.snippet.categoryId}/${item.id}`} className="flex items-center gap-2 mb-5">
+            <Link to={`/video/${item.snippet.categoryId}/${item.id}`} className="flex gap-2 mb-5">
               <div className="basis-[40%]">
                 <img className="rounded-xl" src={item.snippet.thumbnails.medium.url} />
               </div>
               <div className="basis-[55%] ">
-                <h1>{item.snippet.title.slice(0,50)}</h1>
-                <p className="text-sm text-gray-700 font-light">{item.snippet.channelTitle}</p>
-                <p className="text-sm text-gray-700 font-light">
+                <h1 className="font-semibold leading-4">{item.snippet.title.slice(0,50)}</h1>
+                <p className="text-xs text-gray-700 font-light">{item.snippet.channelTitle}</p>
+                <p className="text-xs text-gray-700 font-light">
                   {converter(item.statistics.viewCount)} views &bull; {moment(item.snippet.publishedAt).fromNow()}
                 </p>
               </div>

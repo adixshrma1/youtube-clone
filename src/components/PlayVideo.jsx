@@ -50,8 +50,8 @@ const PlayVideo = () => {
     }
   };
   return (
-    <div className="basis-[69%] px-2">
-      <div className="h-[500px]">
+    <div className="basis-full lg:basis-[69%] px-2">
+      <div className="h-[250px] md:h-[500px]">
         <iframe
           className="w-full h-full rounded-lg"
           src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
@@ -63,24 +63,28 @@ const PlayVideo = () => {
       <h3 className="text-2xl font-semibold my-3">
         {apiData ? apiData.snippet.title : "Video Title"}
       </h3>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img
-            className="w-12 rounded-full"
-            src={channelData ? channelData.snippet.thumbnails.default.url : ""}
-          />
-          <div>
-            <p className="text-lg font-semibold">
-              {apiData ? apiData.snippet.channelTitle : "Channel Title"}
-            </p>
-            <p className="text-sm text-[#5a5a5a]">
-              {channelData
-                ? converter(channelData.statistics.subscriberCount)
-                : "000"}{" "}
-              subscribers
-            </p>
+      <div className="flex flex-wrap items-center justify-between">
+        <div className=" flex items-center justify-between gap-3 mb-2">
+          <div className="flex items-center gap-2">
+            <img
+              className="w-12 rounded-full"
+              src={
+                channelData ? channelData.snippet.thumbnails.default.url : ""
+              }
+            />
+            <div>
+              <p className="text-lg font-semibold">
+                {apiData ? apiData.snippet.channelTitle : "Channel Title"}
+              </p>
+              <p className="text-sm text-[#5a5a5a]">
+                {channelData
+                  ? converter(channelData.statistics.subscriberCount)
+                  : "000"}{" "}
+                subscribers
+              </p>
+            </div>
           </div>
-          <button className="bg-black text-white font-semibold py-2 px-3.5 rounded-full ml-7">
+          <button className="bg-black text-white font-semibold py-2 px-3.5 rounded-full">
             Subscribe
           </button>
         </div>
@@ -123,28 +127,41 @@ const PlayVideo = () => {
         </h4>
         {commentData
           ? commentData.map((item, index) => (
-              <div key={index} className="my-5 flex items-center gap-3">
-                <img className="w-12 rounded-full" src={item.snippet.topLevelComment.snippet.authorProfileImageUrl} />
+              <div key={index} className="my-5 overflow-hidden flex items-start gap-3">
+                <img
+                  className="w-12 rounded-full"
+                  src={
+                    item.snippet.topLevelComment.snippet.authorProfileImageUrl
+                  }
+                />
                 <div className="">
                   <h3 className="font-semibold">
                     {item.snippet.topLevelComment.snippet.authorDisplayName}{" "}
                     <span className="text-gray-700 text-xs font-light">
-                      {moment(item.snippet.topLevelComment.snippet.publishedAt).fromNow()}
+                      {moment(
+                        item.snippet.topLevelComment.snippet.publishedAt
+                      ).fromNow()}
                     </span>
                   </h3>
-                  <p className="text-gray-700">
-                   {item.snippet.topLevelComment.snippet.textDisplay.slice(0,400)}
+                  <p className="text-gray-700 text-sm md:text-base">
+                    {item.snippet.topLevelComment.snippet.textOriginal.slice(
+                      0,
+                      400
+                    )}
                   </p>
                   <div className="flex items-center gap-2 mt-2">
                     <img className="w-6" src={assets.likeIcon} />
-                    <p className="text-sm">{converter(item.snippet.topLevelComment.snippet.likeCount)}</p>
+                    <p className="text-sm">
+                      {converter(
+                        item.snippet.topLevelComment.snippet.likeCount
+                      )}
+                    </p>
                     <img className="w-6" src={assets.dislikeIcon} />
                   </div>
                 </div>
               </div>
             ))
-          : "ghanta"}
-
+          : "no comment"}
       </div>
     </div>
   );

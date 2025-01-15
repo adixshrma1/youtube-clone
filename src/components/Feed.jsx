@@ -31,9 +31,7 @@ const Feed = ({ sidebar, category }) => {
 
   return (
     <div
-      className={`grid grid-cols-3 gap-x-4 gap-y-8 ${
-        sidebar ? "" : "grid-cols-4"
-      }`}
+      className={`grid grid-cols-[repeat(auto-fill,minmax(310px,1fr))] gap-x-4 gap-y-8`}
     >
       {data.map((item, index) => (
         <Link key={index} to={`video/${item.snippet.categoryId}/${item.id}`}>
